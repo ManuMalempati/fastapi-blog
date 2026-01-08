@@ -1,157 +1,94 @@
 FastAPI Blog Application
 
-A full-stack Blog API & Web App built with FastAPI, SQLAlchemy, and PostgreSQL, following clean architecture and best practices.
-Supports blog CRUD operations, database migrations, dependency injection, and automated testing.
+A full-stack Blog API and Web App built with FastAPI, SQLAlchemy, and PostgreSQL. Supports full blog CRUD operations, authentication, HTML templates, and clean backend architecture.
+
+Live Demo: https://fastapi-blog-pwej.onrender.com
 
 Features
 
-- FastAPI backend
+FastAPI backend with RESTful API design
 
-- RESTful API design
+SQLAlchemy ORM
 
-- SQLAlchemy ORM
+PostgreSQL in production and SQLite for testing
 
-- PostgreSQL (production) + SQLite (testing)
+Alembic database migrations
 
-- Alembic database migrations
+Pydantic v2 schemas
 
-- Pydantic schemas (request/response validation)
+Jinja2 templates for server-rendered pages
 
-- Dependency injection
+JWT authentication using secure cookies
 
-- Jinja2 templates for HTML pages
+Clean project structure with routers, models, schemas, and repositories
 
-- Pytest test suite
-
-- Clean project structure (routers, schemas, models, repositories)
-
+Pytest test suite
 
 Tech Stack
-
 Backend: FastAPI
-
 Database: PostgreSQL
-
 ORM: SQLAlchemy
-
 Migrations: Alembic
-
 Validation: Pydantic v2
-
 Templates: Jinja2
-
 Testing: Pytest
-
 Server: Uvicorn
 
-Project Structure
-backend/
-├── alembic/
-├── apis/
-│   ├── base.py
-│   └── v1/
-│       └── route_blog.py
-├── apps/
-│   └── base.py
-├── core/
-│   └── config.py
-├── db/
-│   ├── base.py
-│   ├── models/
-│   ├── repository/
-│   └── session.py
-├── schemas/
-│   ├── blog.py
-│   └── user.py
-├── templates/
-│   └── blogs/
-│       └── home.html
-├── tests/
-│   └── test_routes/
-├── main.py
-└── requirements.txt
+Installation and Setup
 
-Installation & Setup
-1. Clone the repository
+Clone the repository
 git clone https://github.com/your-username/your-repo-name.git
 cd backend
 
-2. Create and activate virtual environment
+Create and activate a virtual environment
 python -m venv env
-source env/bin/activate  # macOS/Linux
-env\Scripts\activate     # Windows
+source env/bin/activate   (macOS/Linux)
+env\Scripts\activate      (Windows)
 
-4. Install dependencies
+Install dependencies
 pip install -r requirements.txt
 
-5. Environment Variables
-
-Create a .env file:
-
+Create a .env file
 DATABASE_URL=postgresql://username:password@localhost:5432/blogdb
 PROJECT_TITLE=Blog API
 PROJECT_VERSION=1.0.0
+SECRET_KEY=your-secret-key
+ALGORITHM=HS256
 
-Database Setup (Alembic)
-Create tables
+Run database migrations
 alembic upgrade head
 
-Run the Application
+Start the application
 uvicorn main:app --reload --port 5002
 
-
-API: http://127.0.0.1:5002
-
-Docs (Swagger): http://127.0.0.1:5002/docs
-
+Local URLs
+API Root: http://127.0.0.1:5002
+Swagger Docs: http://127.0.0.1:5002/docs
 Home Page: http://127.0.0.1:5002/
+Production Deployment: https://fastapi-blog-pwej.onrender.com
 
 API Endpoints
-Blog
-Method	Endpoint	Description
-POST	/blog/	Create a blog
-GET	/blog/{id}	Get blog by ID
-GET	/blog/active_blogs	Get all active blogs
-PUT	/blog/{id}	Update a blog
-DELETE	/blog/{id}	Delete a blog
+
+Blog:
+POST /blog/ - Create a blog
+GET /blog/{id} - Get blog by ID
+GET /blog/active_blogs - Get all active blogs
+PUT /blog/{id} - Update a blog
+DELETE /blog/{id} - Delete a blog
+
 Running Tests
 pytest
 
-
-Uses SQLite for isolated test runs
-
-Overrides get_db dependency
-
-Fresh database per test
+Uses SQLite for isolated test runs with dependency overrides.
 
 Learning Outcomes
-
-This project demonstrates:
-
 Clean FastAPI architecture
-
-Proper separation of concerns
-
 Dependency injection
-
 Database session management
-
-API validation with Pydantic
-
-Writing production-ready tests
-
-Future Improvements
-
-Authentication (JWT / OAuth2)
-
-User roles & permissions
-
-Comments & likes
-
-Frontend integration (React / Next.js)
-
-Docker deployment
-
+Pydantic validation
+Alembic migrations
+Writing maintainable backend code
+Building a full-stack FastAPI app with templates
 
 Author
 Manu
