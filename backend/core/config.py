@@ -1,24 +1,19 @@
+from typing import Optional
 import os
 from dotenv import load_dotenv
 from pathlib import Path
-from typing import Optional
 
-# Load environment variables from .env
 env_path = Path(".") / ".env"
 load_dotenv(dotenv_path=env_path)
 
-
 class Settings:
-    # Project info
     PROJECT_TITLE: str = "blog"
     PROJECT_VERSION: str = "0.1.0"
 
-    # Security
-    SECRET_KEY: Optional[str] = os.getenv("SECRET_KEY")
+    SECRET_KEY: str = os.getenv("SECRET_KEY")
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
-    # Database
     DATABASE_URL: Optional[str] = os.getenv("DATABASE_URL")
 
     if DATABASE_URL is None:
@@ -33,6 +28,4 @@ class Settings:
             f"{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
         )
 
-
-# Create a settings instance
 settings = Settings()
