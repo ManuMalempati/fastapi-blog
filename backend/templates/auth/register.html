@@ -7,11 +7,15 @@
 
 {% block content %}
 
-{% for error in errors %}
+{% if errors %}
 <div class="alert alert-danger">
-    <li>{{error}}</li>
+    <ul>
+        {% for error in errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
 </div>
-{% endfor %}
+{% endif %}
 
 <div class="container">
     <div class="text-center display-4">Register</div>

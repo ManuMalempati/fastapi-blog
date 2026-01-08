@@ -9,6 +9,7 @@ from db.repository.user import create_new_user
 from pydantic.error_wrappers import ValidationError
 from apis.v1.route_login import authenticate_user
 from core.security import create_access_token
+from sqlalchemy.exc import IntegrityError
 
 templates = Jinja2Templates(directory="templates")
 router = APIRouter()
@@ -18,18 +19,36 @@ def register(request: Request):
     return templates.TemplateResponse("auth/register.html", {"request": request})
 
 @router.post("/register")
-def register(request: Request, email: str = Form(...), password: str = Form(...), db: session = Depends(get_db)):
+def register(
+    request: Request,
+    email: str = Form(...),
+    password: str = Form(...),
+    db: session = Depends(get_db)
+):
     errors = []
     try:
         user = UserCreate(email=email, password=password)
         create_new_user(user=user, db=db)
-        return responses.RedirectResponse("/?alert=Successfully%20Registered", status_code=status.HTTP_302_FOUND)
+        return responses.RedirectResponse(
+            "/?alert=Successfully%20Registered",
+            status_code=status.HTTP_302_FOUND
+        )
+
+    except IntegrityError:
+        errors.append("User with this email already exists")
+        return templates.TemplateResponse(
+            "auth/register.html",
+            {"request": request, "errors": errors, "email": email}
+        )
 
     except ValidationError as e:
         errors_list = json.loads(e.json())
         for item in errors_list:
-            errors.append(item.get("loc")[0]+": "+item.get("msg"))
-        return templates.TemplateResponse("auth/register.html", {"request": request, "errors": errors})
+            errors.append(item.get("loc")[0] + ": " + item.get("msg"))
+        return templates.TemplateResponse(
+            "auth/register.html",
+            {"request": request, "errors": errors}
+        )
 
 @router.get("/login")
 def login(request: Request):
