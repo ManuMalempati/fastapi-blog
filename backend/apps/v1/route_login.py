@@ -45,7 +45,12 @@ def login(request: Request, email: str = Form(...), password: str = Form(...), d
     data = {"sub": email}
     access_token = create_access_token(data=data)
     response = responses.RedirectResponse("/?alert=Successfully%20LoggedIn", status_code=status.HTTP_302_FOUND)
-    response.set_cookie(key="access_token", value=f"Bearer {access_token}")
+    response.set_cookie(
+    key="access_token",
+    value=f"Bearer {access_token}",
+    httponly=True,
+    samesite="lax"
+)
     return response
 
 @router.get("/logout")
