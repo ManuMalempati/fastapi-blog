@@ -1,23 +1,26 @@
-from fastapi import FastAPI, Depends, HTTPException
-from core.config import settings
-from typing import Dict
-from db.session import engine
-from apis.base import apirouter
-from apps.base import app_router
+from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-def configure_staticfiles(app):
+from core.config import settings
+from db.session import engine
+from db.base_class import Base
+from apis.base import apirouter
+from apps.base import app_router
+
+def configure_staticfiles(app: FastAPI):
     app.mount("/static", StaticFiles(directory="static"), name="static")
 
-def include_router(app):
+
+def include_routers(app: FastAPI):
     app.include_router(apirouter)
     app.include_router(app_router)
 
-# Propogate changes to database via alembic instead of createall to make sure we have versioning
-def start_app():
+
+def start_app() -> FastAPI:
     app = FastAPI(title=settings.PROJECT_TITLE, version=settings.PROJECT_VERSION)
-    include_router(app)
+    include_routers(app)
     configure_staticfiles(app)
     return app
+
 
 app = start_app()
