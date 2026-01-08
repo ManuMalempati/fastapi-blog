@@ -44,6 +44,12 @@ def login(request: Request, email: str = Form(...), password: str = Form(...), d
         return templates.TemplateResponse("auth/login.html", {"request": request, "errors": errors, "email": email, "password": password})
     data = {"sub": email}
     access_token = create_access_token(data=data)
-    response = responses.RedirectResponse("/?alert=Successfully%20Registered", status_code=status.HTTP_302_FOUND)
+    response = responses.RedirectResponse("/?alert=Successfully%20LoggedIn", status_code=status.HTTP_302_FOUND)
     response.set_cookie(key="access_token", value=f"Bearer {access_token}")
+    return response
+
+@router.get("/logout")
+def logout():
+    response = responses.RedirectResponse("/?alert=Logged%20out", status_code=status.HTTP_302_FOUND)
+    response.delete_cookie("access_token")
     return response

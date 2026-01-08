@@ -27,7 +27,8 @@ def include_routers(app: FastAPI):
 
 def start_app():
     app = FastAPI(title=settings.PROJECT_TITLE, version=settings.PROJECT_VERSION)
-    run_migrations()  # ← run Alembic automatically
+    # uncomment this if hosting on render
+    #run_migrations()
     include_routers(app)
     configure_staticfiles(app)
     return app

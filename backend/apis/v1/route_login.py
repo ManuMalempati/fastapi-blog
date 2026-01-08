@@ -1,12 +1,14 @@
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from fastapi import Depends, APIRouter, status, HTTPException
+from fastapi import Depends, APIRouter, status, HTTPException, Request
 from sqlalchemy.orm import Session
 from db.session import get_db
+from db.models.user import User
 from core.hashing import Hasher
 from db.repository.login import get_user_by_email
 from core.security import create_access_token
 from jose import jwt, JWTError
 from core.config import settings
+from typing import Optional
 
 router = APIRouter()
 
@@ -31,20 +33,42 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login/token")
 
-def get_current_user(token: str= Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials, login again"
-    )
+def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
+    token = request.cookies.get("access_token")
+    if not token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+    
+    if token.startswith("Bearer "):
+        token = token[7:]
+
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         email: str = payload.get("sub")
-        if email is None:
-            raise credentials_exception
+        if not email:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     except JWTError:
-        raise credentials_exception
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     
-    user = get_user_by_email(email=email, db=db)
-    if(user is None):
-        raise credentials_exception
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+    
     return user
+
+def get_optional_user(request: Request, db: Session = Depends(get_db)) -> Optional[User]:
+    token = request.cookies.get("access_token")
+    if not token:
+        return None
+
+    if token.startswith("Bearer "):
+        token = token[7:]
+
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        email: str = payload.get("sub")
+        if not email:
+            return None
+    except JWTError:
+        return None
+
+    return db.query(User).filter(User.email == email).first()
